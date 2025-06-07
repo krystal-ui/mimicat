@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>水餃團購表單</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    td, th { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    input[type="number"] { width: 60px; }
+    input[type="text"] { width: 200px; }
+    tfoot td { font-weight: bold; }
+    button { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>水餃團購表單</h1>
+
+  <form id="orderForm" onsubmit="handleSubmit(event)">
+    <label>
+      姓名：<input type="text" id="name" required />
+    </label>
+    <label>
+      聯絡方式（可填分機）：<input type="text" id="contact" required />
+    </label>
+
+    <table id="orderTable">
+      <thead>
+        <tr><th>品項</th><th>單價</th><th>數量</th><th>小計</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>高麗菜蝦仁</td><td>280</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
+        <tr><td>韭菜蝦仁</td><td>280</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
+        <tr><td>香菜蝦仁</td><td>360</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
+        <tr><td>高麗菜豬肉</td><td>260</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
+        <tr><td>韭菜豬肉</td><td>170</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
+        <tr><td>香菜豬肉</td><td>170</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
+        <tr><td>大白菜豬肉</td><td>180</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
+        <tr><td>韭黃豬肉</td><td>170</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
+      </tbody>
+      <tfoot>
+        <tr><td colspan="3">總金額</td><td id="total">0</td></tr>
+      </tfoot>
+    </table>
+
+    <button type="submit">送出</button>
+    <button type="button" onclick="window.print()">列印</button>
+  </form>
+
+<script>
+function calcTotal() {
+  const rows = document.querySelectorAll("#orderTable tbody tr");
+  let total = 0;
+
+  rows.forEach(row => {
+    const price = parseInt(row.children[1].textContent);
+    const qty = parseInt(row.children[2].children[0].value) || 0;
+    const subtotal = price * qty;
+    row.children[3].textContent = subtotal;
+    total += subtotal;
+  });
+
+  document.getElementById("total").textContent = total;
+}
+
+function handleSubmit(event) {
+  event.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const contact = document.getElementById("contact").value;
+
+  const rows = document.querySelectorAll("#orderTable tbody tr");
+  const orders = [], quantities = [], subtotals = [];
+
+  rows.forEach(row => {
+    const item = row.children[0].textContent;
+    const qty = parseInt(row.children[2].children[0].value);
+    const subtotal = row.children[3].textContent;
+    if (qty > 0) {
+      orders.push(item);
+      quantities.push(qty);
+      subtotals.push(subtotal);
+    }
+  });
+
+  const total = document.getElementById("total").textContent;
+
+  fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec", {
+    method: "POST",
+    body: JSON.stringify({ name, contact, orders, quantities, subtotals, total }),
+    headers: { "Content-Type": "application/json" }
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert("表單已送出！");
+    document.getElementById("orderForm").reset();
+    calcTotal();
+  })
+  .catch(err => alert("送出失敗：" + err));
+}
+</script>
+</body>
+</html>
