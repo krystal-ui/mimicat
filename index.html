@@ -38,7 +38,7 @@
         <tr><td>韭菜豬肉</td><td>170</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
         <tr><td>香菜豬肉</td><td>170</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
         <tr><td>大白菜豬肉</td><td>180</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
-        <tr><td>韭黃豬肉</td><td>170</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
+        <tr><td>素食</td><td>170</td><td><input type="number" min="0" value="0" onchange="calcTotal()" /></td><td>0</td></tr>
       </tbody>
       <tfoot>
         <tr><td colspan="3">總金額</td><td id="total">0</td></tr>
@@ -94,7 +94,7 @@ function handleSubmit(event) {
   })
   .then(res => res.text())
   .then(msg => {
-    alert("表單已送出！");
+    alert("表單已送出！等待麗晴統計!");
     document.getElementById("orderForm").reset();
     calcTotal();
   })
